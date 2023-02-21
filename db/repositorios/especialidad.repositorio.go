@@ -2,18 +2,25 @@ package repositorio
 
 import (
 	"database/sql"
-	"fmt"
+
+	model "github.com/Julio-Hurtado/CRUD/models"
 )
 
 type Especialidad struct{}
 
-func (especialidadRepo *Especialidad) Listar(db *sql.DB) {
-	fmt.Println(db)
-	rows, err := db.Query("SELECT * FROM medico")
+func (especialidadRepo *Especialidad) Listar(db *sql.DB) ([]model.Especialidad, error) {
+	rows, err := db.Query("SELECT * FROM especialidad")
 
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	defer rows.Close()
-	fmt.Println(rows.Next())
+	var especialidades []model.Especialidad
+	for rows.Next() {
+		especialidad := model.Especialidad{}
+		rows.Scan(&especialidad.Id, &especialidad.Codigo, &especialidad.Nombre)
+		especialidades = append(especialidades, especialidad)
+
+	}
+	return especialidades, nil
 }
